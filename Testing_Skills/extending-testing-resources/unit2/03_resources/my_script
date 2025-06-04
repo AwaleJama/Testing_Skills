@@ -1,0 +1,33 @@
+from faker import Faker
+import os
+import random
+
+faker = Faker("en_UK")
+TARGET_DIR = "bulk_test_1"
+ORIGINALS = os.path.join(TARGET_DIR, "originals")
+UPDATES = os.path.join(TARGET_DIR, "updates")
+LIST_TYPE = random.choice(["allowlist", "droplist"])
+
+os.makedirs(ORIGINALS, exist_ok=True)
+os.makedirs(UPDATES, exist_ok=True)
+
+surnames = list({faker.last_name() for _ in range(10)})
+
+original_surnames = surnames[:5]
+update_surnames = surnames[5:]
+
+for name in original_surnames:
+    with open(os.path.join(ORIGINALS, f"{name}.txt"), "w") as f:
+        f.write(faker.address())
+
+for name in update_surnames:
+    with open(os.path.join(UPDATES, f"{name}.txt"), "w") as f:
+        f.write(faker.address())
+
+list_file_path = os.path.join(TARGET_DIR, LIST_TYPE)
+with open(list_file_path, "w") as f:
+    for name in original_surnames[:3]:
+        f.write(name + "\n")
+
+print(f"Generated test data in: {TARGET_DIR}")
+print(f"{LIST_TYPE} includes: {original_surnames[:3]}")
